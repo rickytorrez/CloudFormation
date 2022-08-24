@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Our first template for Cloud Formation
+
+Resource:
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: ami-09e2d756e7d78558d
+      InstanceType: t2.micro
+      Tags: 
+        - 
+          Key: Name
+          Value: Web Server
+        -
+          Key: Project
+          Value: Cloud Formation 101

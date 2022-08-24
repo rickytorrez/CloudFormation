@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: Our first template for Cloud Formation
+Description: Our first template for CloudFormation
 
-Resource:
+Resources:
   WebServerInstance:
     Type: AWS::EC2::Instance
     Properties: 

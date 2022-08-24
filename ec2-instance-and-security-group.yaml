@@ -9,6 +9,10 @@ Resources:
     Properties: 
       ImageId: ami-09e2d756e7d78558d
       InstanceType: t2.micro
+      # attached the sec group to the ec2 instance
+      SecurityGroupIds: 
+        -
+          Ref: WebServerSecurityGroup
       Tags: 
         - 
           Key: Name

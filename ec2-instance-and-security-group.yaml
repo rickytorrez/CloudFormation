@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Our first template for CloudFormation
+
+Resources:
+  # ec2 instance
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: ami-09e2d756e7d78558d
+      InstanceType: t2.micro
+      Tags: 
+        - 
+          Key: Name
+          Value: Web Server
+        -
+          Key: Project
+          Value: Cloud Formation 101
+  # security group
+  WebServerSecurityGroup: 
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Security group for web servers
+      SecurityGroupIngress:
+        -
+          IpProtocol: "tcp"
+          FromPort: 80
+          ToPort: 80
+          CidrIp: "0.0.0.0/0"
+      Tags: 
+        - 
+          Key: Name
+          Value: Web Server Security Group

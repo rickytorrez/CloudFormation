@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: VPC Project
+
+Resources:
+  # vpc
+  ProjectVPC: 
+    Type: AWS::EC2::VPC
+    Description: VPC for second project
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      Tags:
+        -
+          Key: Name
+          Value: SecondProjectVPC
+  # subnet
+  ProjectSubnet:
+    Type: AWS::EC2::Subnet
+    Properties: 
+      CidrBlock: 10.0.0.0/24
+      MapPublicIpOnLaunch: true
+      VpcId: !Ref ProjectVPC
+  # route table
+  ProjectRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties: 
+      VpcId: !Ref ProjectVPC
+  # internet gateway
+  ProjectInternetGateway:
+    Type: AWS::EC2::InternetGateway
+  # resource to associate an internet gateway with a VPC
+  ProjectGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref ProjectVPC
+      InternetGatewayId: !Ref ProjectInternetGateway
+  # route
+  InternetRoute:
+    Type: AWS::EC2::Route
+    # need to assure that the gateway is associated with the vpc before creating a route
+    DependsOn: 
+      - ProjectGatewayAttachment
+    Properties: 
+      RouteTableId: !Ref ProjectRouteTable
+      GatewayId: !Ref ProjectInternetGateway
+      DestinationCidrBlock: 0.0.0.0/0
+  # associate the subnet with the route table
+  ProjectSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties: 
+      RouteTableId: !Ref ProjectRouteTable
+      SubnetId: !Ref ProjectSubnet
+  # ec2 instance
+  ProjectEC2Instance:
+    Type: AWS::EC2::Instance
+    # ensure instance is created after the internet route and subnet route table association resources
+    DependsOn: 
+      - InternetRoute
+      - ProjectSubnetRouteTableAssociation
+    Properties: 
+      ImageId: ami-09e2d756e7d78558d
+      InstanceType: t2.micro
+      SubnetId: !Ref ProjectSubnet

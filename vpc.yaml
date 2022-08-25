@@ -61,3 +61,18 @@ Resources:
       ImageId: ami-09e2d756e7d78558d
       InstanceType: t2.micro
       SubnetId: !Ref ProjectSubnet
+      #attach the security group below to our instance
+      SecurityGroupIds:
+       - !Ref ProjectSecurityGroup
+  # security group
+  ProjectSecurityGroup: 
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Project security group
+      VpcId: !Ref ProjectVPC
+      SecurityGroupIngress:
+        -
+          IpProtocol: "icmp"
+          FromPort: -1
+          ToPort: -1
+          CidrIp: "0.0.0.0/0"

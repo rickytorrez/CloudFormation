@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: RDS stack
+
+Parameters:
+  DBClass:
+    Type: String
+    Description: RDS Instance Class
+
+Resources:
+  # db security group
+  DbSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: vpc-0c95efde864c744ca
+      GroupDescription: 'Database instances security group'
+      SecurityGroupIngress:
+        - 
+          CidrIp: 0.0.0.0/0
+          FromPort: 3306
+          ToPort: 3306
+          IpProtocol: tcp
+  # db subnet group - resource in which rds instances can be launched into
+  DbSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: Subnets to launch db instances into
+      SubnetIds: 
+        - subnet-0ee568d79403663d4
+        - subnet-08559baafb9e926ad
+        - subnet-0d5f182b8337b9d83
+  # rds instance
+  DatabaseInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: !Ref DBClass
+      Engine: mariadb
+      MultiAZ: false
+      PubliclyAccessible: true
+      AllocatedStorage: 8
+      MasterUsername: dbadmin
+      MasterUserPassword: 12345678
+      DBSubnetGroupName: !Ref DbSubnetGroup
+      VPCSecurityGroups: 
+        - !Ref DbSecurityGroup
+      

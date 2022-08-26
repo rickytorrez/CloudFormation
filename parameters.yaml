@@ -6,6 +6,18 @@ Parameters:
   DBClass:
     Type: String
     Description: RDS Instance Class
+  MasterUserName:
+    Type: String
+    Description: Master Username for the Database Instance
+  MasterUserPassword:
+    Type: String
+    Description: Master User Passowrd for the Database Instance
+  MultiAZ:
+    Type: String
+    Description: Enable Multi-AZ feature on the DB Instance 
+  AllocatedStorage:
+    Type: Number
+    Description: Database Storage Size in GB
 
 Resources:
   # db security group
@@ -35,11 +47,11 @@ Resources:
     Properties:
       DBInstanceClass: !Ref DBClass
       Engine: mariadb
-      MultiAZ: false
+      MultiAZ: !Ref MultiAZ
       PubliclyAccessible: true
-      AllocatedStorage: 8
-      MasterUsername: dbadmin
-      MasterUserPassword: 12345678
+      AllocatedStorage: !Ref AllocatedStorage
+      MasterUsername: !Ref MasterUserName
+      MasterUserPassword: !Ref MasterUserPassword
       DBSubnetGroupName: !Ref DbSubnetGroup
       VPCSecurityGroups: 
         - !Ref DbSecurityGroup

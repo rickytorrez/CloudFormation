@@ -46,6 +46,10 @@ Parameters:
   SecurityGroupPorts:
     Type: List<Number>
     Description: 'Port number as a list <web-server-port>, <database-port>'
+    Default: '80, 3306'
+  DBSubnets:
+    Type: CommaDelimitedList
+    Description: 'Db subnet ids as a list: <subnet1>, <subnet2>, ...'
 
 Resources:
   WebServerSecurityGroup:
@@ -79,10 +83,11 @@ Resources:
     Type: 'AWS::RDS::DBSubnetGroup'
     Properties:
       DBSubnetGroupDescription: Subnets to launch db instances into
-      SubnetIds: 
-        - subnet-0ee568d79403663d4
-        - subnet-08559baafb9e926ad
-        - subnet-0d5f182b8337b9d83
+      SubnetIds: !Ref DBSubnets
+        # references the index value in the DBSubnets string list
+        # - !Select [ 0, !Ref DBSubnets ]
+        # - !Select [ 1, !Ref DBSubnets ]
+        # - !Select [ 2, !Ref DBSubnets ]
   # rds instance
   DatabaseInstance:
     Type: AWS::RDS::DBInstance

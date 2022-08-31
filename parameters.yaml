@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Description: RDS stack
 
+# parameters and constraints
 Parameters:
   DBClass:
     Type: String
@@ -9,9 +10,11 @@ Parameters:
   MasterUserName:
     Type: String
     Description: Master Username for the Database Instance
+    MaxLength: 10
   MasterUserPassword:
     Type: String
     Description: Master User Passowrd for the Database Instance
+    MinLength: 8
   MultiAZ:
     Type: String
     Description: Enable Multi-AZ feature on the DB Instance 

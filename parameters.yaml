@@ -43,8 +43,24 @@ Parameters:
     ConstraintDescription: AllocatedStorage parameter value should be between 8 and 20 GBs.
     # default value for parameter
     Default: 8
+  SecurityGroupPorts:
+    Type: List<Number>
+    Description: 'Port number as a list <web-server-port>, <database-port>'
 
 Resources:
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: vpc-0c95efde864c744ca
+      GroupDescription: 'Web Server instances security group'
+      SecurityGroupIngress:
+        - 
+          CidrIp: 0.0.0.0/0
+          # sec group ref for web is the first index on the list
+          FromPort:
+            Fn::Select: [ 0, !Ref SecurityGroupPorts ]
+          ToPort: !Select  [ 0, !Ref SecurityGroupPorts ]
+          IpProtocol: tcp
   # db security group
   DbSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -54,8 +70,9 @@ Resources:
       SecurityGroupIngress:
         - 
           CidrIp: 0.0.0.0/0
-          FromPort: 3306
-          ToPort: 3306
+          # sec group ref for db is the second index on the list
+          FromPort: !Select [ 1, !Ref SecurityGroupPorts ]
+          ToPort: !Select [ 1, !Ref SecurityGroupPorts ]
           IpProtocol: tcp
   # db subnet group - resource in which rds instances can be launched into
   DbSubnetGroup:

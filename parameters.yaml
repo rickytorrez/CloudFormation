@@ -12,14 +12,20 @@ Parameters:
       - db.t2.micro
       - db.t2.small
     ConstraintDescription: 'DBClass parameter can only have these values: db.t2.micro, db.t2.small'
+    Default: db.t2.micro
   MasterUserName:
     Type: String
     Description: Master Username for the Database Instance
     MaxLength: 10
+    Default: dbadmin
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    ConstraintDescription: MasterUsername must begin with a letter and it cannot exceed 10 characters
+    NoEcho: true
   MasterUserPassword:
     Type: String
     Description: Master User Passowrd for the Database Instance
     MinLength: 8
+    NoEcho: true
   MultiAZ:
     Type: String
     Description: Enable Multi-AZ feature on the DB Instance 
@@ -27,6 +33,7 @@ Parameters:
       - true
       - false
     ConstraintDescription: MultiAZ parameter should be either true or false
+    Default: false
   AllocatedStorage:
     Type: Number
     Description: Database Storage Size in GB
@@ -34,6 +41,8 @@ Parameters:
     MaxValue: 20
     # custom error message for number type constraint
     ConstraintDescription: AllocatedStorage parameter value should be between 8 and 20 GBs.
+    # default value for parameter
+    Default: 8
 
 Resources:
   # db security group

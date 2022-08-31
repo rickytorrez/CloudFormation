@@ -21,6 +21,10 @@ Parameters:
   AllocatedStorage:
     Type: Number
     Description: Database Storage Size in GB
+    MinValue: 8
+    MaxValue: 20
+    # custom error message for number type constraint
+    ConstraintDescription: AllocatedStorage parameter value should be between 8 and 20 GBs.
 
 Resources:
   # db security group

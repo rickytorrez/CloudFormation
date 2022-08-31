@@ -7,6 +7,11 @@ Parameters:
   DBClass:
     Type: String
     Description: RDS Instance Class
+    # allowed values parameter
+    AllowedValues: 
+      - db.t2.micro
+      - db.t2.small
+    ConstraintDescription: 'DBClass parameter can only have these values: db.t2.micro, db.t2.small'
   MasterUserName:
     Type: String
     Description: Master Username for the Database Instance
@@ -18,6 +23,10 @@ Parameters:
   MultiAZ:
     Type: String
     Description: Enable Multi-AZ feature on the DB Instance 
+    AllowedValues:
+      - true
+      - false
+    ConstraintDescription: MultiAZ parameter should be either true or false
   AllocatedStorage:
     Type: Number
     Description: Database Storage Size in GB

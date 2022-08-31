@@ -19,11 +19,13 @@ Parameters:
     MaxLength: 10
     Default: dbadmin
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
-    ConstraintDescription: MasterUsername must begin with a letter
+    ConstraintDescription: MasterUsername must begin with a letter and it cannot exceed 10 characters
+    NoEcho: true
   MasterUserPassword:
     Type: String
     Description: Master User Passowrd for the Database Instance
     MinLength: 8
+    NoEcho: true
   MultiAZ:
     Type: String
     Description: Enable Multi-AZ feature on the DB Instance 

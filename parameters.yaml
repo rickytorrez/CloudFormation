@@ -57,6 +57,18 @@ Parameters:
     Description: A valid VPC id in your AWS Account
 
 Resources:
+  Bastion:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: ami-09e2d756e7d78558d
+      InstanceType: t2.micro
+      # select the first subnet from the DbSubnets parameter
+      SubnetId: !Select [ 0, !Ref DBSubnets ]
+      Tags: 
+        - 
+          Key: Name
+          # substitutes string variables in runtime - '<StackName>-Bastion'
+          Value: !Sub '${AWS::StackName}-Bastion'
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

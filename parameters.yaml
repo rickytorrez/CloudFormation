@@ -47,15 +47,20 @@ Parameters:
     Type: List<Number>
     Description: 'Port number as a list <web-server-port>, <database-port>'
     Default: '80, 3306'
+  # aws specific parameter types
   DBSubnets:
-    Type: CommaDelimitedList
+    Type: List<AWS::EC2::Subnet::Id>
     Description: 'Db subnet ids as a list: <subnet1>, <subnet2>, ...'
+  # vpc id for security group resources
+  VPCId:
+    Type: AWS::EC2::VPC::Id
+    Description: A valid VPC id in your AWS Account
 
 Resources:
   WebServerSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: vpc-0c95efde864c744ca
+      VpcId: !Ref VPCId
       GroupDescription: 'Web Server instances security group'
       SecurityGroupIngress:
         - 
@@ -69,7 +74,7 @@ Resources:
   DbSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      VpcId: vpc-0c95efde864c744ca
+      VpcId: !Ref VPCId
       GroupDescription: 'Database instances security group'
       SecurityGroupIngress:
         - 

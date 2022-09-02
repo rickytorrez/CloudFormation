@@ -1,7 +1,34 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: RDS stack
+Description: Sample Template using Parameters, Metadata and Mappings
 
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        # parameter group name
+        Label: 
+          default: Database Instance Settings
+        # parameter group members
+        Parameteres:
+          - DBClass
+          - MultiAZ
+          - AllocatedStorage
+          - MasterUserName
+          - MasterUserPassword
+      -
+        Label:
+          default: Network Settings
+        Parameters:
+          - VPCId
+          - DBSubnets
+          - SecurityGroupPorts
+    ParameterLabels:
+      DbClass:
+        default: Database Instance Class 
+      AllocatedStorage:
+        default: Allocated Storage Size 
+          
 # parameters and constraints
 Parameters:
   DBClass:

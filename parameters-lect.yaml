@@ -6,25 +6,56 @@ Description: >-
   a web server EC2 instance in the public subnet 
   and a security group attached to this EC2 instance.
 
+Parameters:
+  # instance type for WebServerInstance
+  InstanceType:
+    Type: String
+    Description: EC2 Instance Type
+    AllowedValues:
+      - t2.nano
+      - t2.micro
+      - t2.small
+  # instance image id for WebServerInstance
+  ImageId:
+    Type: String
+    Default: ami-0fad7378adf284ce0
+    Description: ImageId for EC2 Instance
+  # ebs volume size for WebServerInstance
+  EBSVolumeSize:
+    Type: Number
+    Description: EBS Volume Size in GBs
+  # aws-specific parameter for ec2 key pair names
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: A valid EC2 Key Pair
+  # cidr block parameter
+  VpcCidrBlocks:
+    Type: CommaDelimitedList
+    Description: 'VPC, Public Subnet, Private Subnet'
+  # aws-specific availability zone
+  SubnetAZ:
+    Type: AWS::EC2::AvailabilityZone::Name
+
 Resources:
   Vpc:
     Type: AWS::EC2::VPC
     Description: Section 3 activity VPC
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: !Select [ 0, !Ref VpcCidrBlocks ]
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
         -
           Key: Name
-          Value: Section 3 Activity VPC
+          # fn::sub
+          Value: !Sub '${AWS::StackName}-vpc'
 
   # Subnets ---        
   PublicSubnet:
     Type: AWS::EC2::Subnet 
     Properties:
-      AvailabilityZone: eu-west-1a
-      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: !Ref SubnetAZ
+      CidrBlock: !Select [ 1, !Ref VpcCidrBlocks ]
       MapPublicIpOnLaunch: true
       VpcId: !Ref Vpc
       Tags:
@@ -35,8 +66,8 @@ Resources:
   PrivateSubnet:
     Type: AWS::EC2::Subnet 
     Properties:
-      AvailabilityZone: eu-west-1a
-      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Ref SubnetAZ
+      CidrBlock: !Select [ 2, !Ref VpcCidrBlocks ]
       VpcId: !Ref Vpc
       Tags:
         -
@@ -97,16 +128,18 @@ Resources:
       - InternetRoute
       - PublicSubnetRouteTableAssoc
     Properties:
-      InstanceType: t2.micro
+      InstanceType: !Ref InstanceType
       SubnetId: !Ref PublicSubnet 
-      ImageId: ami-0fad7378adf284ce0
+      ImageId: !Ref ImageId
+      # add key name attribute
+      KeyName: !Ref KeyPairName
       SecurityGroupIds:
         - !Ref WebServerSecurityGroup
       BlockDeviceMappings:
         - 
           DeviceName: /dev/sdf
           Ebs:
-            VolumeSize: 20
+            VolumeSize: !Ref EBSVolumeSize
             VolumeType: gp2
       Tags:
         -

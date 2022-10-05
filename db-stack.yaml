@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   A database stack template that creates a master RDS instance and a read replica. 
   It also provisions a security group and attaches to the db instances.
+  Aim is to create a read replica only on the production environment.
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -20,6 +21,14 @@ Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id 
     Description: A valid VPC id in your AWS account
+  # conditional parameter that defines wheter instance is prod or dev
+  Environment:
+    Type: String
+    AllowedValues: [ test, production ]
+    
+# condition section to evaluate the value of the environment parameter
+Conditions:
+  EnvironmentIsProduction: !Equals [ !Ref Environment, production ]
 
 Resources:
   DbSecurityGroup:
@@ -56,7 +65,9 @@ Resources:
 
   ReadReplica:
     Type: AWS::RDS::DBInstance
+    Condition: EnvironmentIsProduction
     Properties:
+      # property that references which database to create a replica from
       SourceDBInstanceIdentifier: !Ref MasterDbInstance
       DBInstanceClass: db.t2.micro 
       Engine: mysql

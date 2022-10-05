@@ -23,9 +23,9 @@ Parameters:
     Description: A valid VPC id in your AWS account
   # conditional parameter that defines wheter instance is prod or dev
   Environment:
-    Type: String
+    Type: String 
     AllowedValues: [ test, production ]
-    
+
 # condition section to evaluate the value of the environment parameter
 Conditions:
   EnvironmentIsProduction: !Equals [ !Ref Environment, production ]
@@ -76,4 +76,7 @@ Resources:
       VPCSecurityGroups: 
         - !Ref DbSecurityGroup
 
-      
+Outputs:
+  MasterDbId:
+    Value: !Ref MasterDbInstance
+    Description: Master database instance identifier 

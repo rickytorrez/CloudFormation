@@ -22,7 +22,6 @@ Metadata:
           default: EBS Volume Settings
         Parameters:
           - EbsVolumeSize
-          - EbsVolumeAZ
 
     ParameterLabels:
       VpcId:
@@ -42,11 +41,13 @@ Parameters:
     Type: Number
     Description: Size in GiB
     Default: 10 
-  EbsVolumeAZ:
-    Type: AWS::EC2::AvailabilityZone::Name 
-    Description: Availability Zone of the EBS volume
   KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
+  # volume creation optional parameter
+  NewVolumeOption:
+    Type: String
+    AllowedValues: [ true, false ]
+    Description: Whether to create and attach an EBS volume
 
 Mappings:
   RegionImages:
@@ -54,6 +55,10 @@ Mappings:
       ImageId: ami-07683a44e80cd32c5
     us-east-1:
       ImageId: ami-0de53d8956e8dcf80
+
+Conditions:
+  # condition whether to create the and attach the ebs volume or not
+  NewVolumeOptionSelected: !Equals [ !NewVolumeOption, true ]
 
 Resources:
   WebServerInstance:
@@ -97,12 +102,14 @@ Resources:
           FromPort: 22 
           ToPort: 22
 
-  # EBS Volume that should be created in the same AZ 
-  # with the WebServerInstance
+  
   EbsVolume:
     Type: AWS::EC2::Volume
+    # attach condition to the EBS volume
+    Condition: NewVolumeOptionSelected
     Properties:
-      AvailabilityZone: !Ref EbsVolumeAZ
+      # EBS Volume should be created in the same AZ with the WebServerInstance
+      AvailabilityZone: !GetAtt [ WebServerInstance, AvailabilityZone ]
       VolumeType: gp2
       Size: !Ref EbsVolumeSize
       Tags:
@@ -112,8 +119,20 @@ Resources:
 
   VolumeAttachment:
     Type: AWS::EC2::VolumeAttachment
+    # attach condition to the EBS volume attachment
+    Condition: NewVolumeOptionSelected
     Properties:
       Device: /dev/sdf
       InstanceId: !Ref WebServerInstance
       VolumeId: !Ref EbsVolume
+  
+  Outputs:
+    WebServerInstanceId:
+      Value: !Ref WebServerInstance
+    WebServerPublicDns:
+      Value: !GetAtt [ WebServerInstance, PublicDnsName ]
+      Description: The public DNS name of the web server
+    EbsVolumeId:
+      Value: !Ref EbsVolume
+      Condition: NewVolumeOptionSelected
       

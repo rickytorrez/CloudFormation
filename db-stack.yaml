@@ -83,3 +83,8 @@ Outputs:
   MasterDBEndpoint:
     Value: !GetAtt [ MasterDbInstance, Endpoint.Address ]
     Description: The connection endpoint of the master database instance
+  # conditional output for when a read replica is created
+  ReadReplicaEndpoint:
+    Value: !GetAtt [ ReadReplica, Endpoint.Address ]
+    Description: The connection endpoint for the read replica
+    Condition: EnvironmentIsProduction

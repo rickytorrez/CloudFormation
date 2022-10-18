@@ -1,0 +1,4 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  It creates a dynamodb table, ec2 instance with ssh access and policy that 
+  let's the instance query the database

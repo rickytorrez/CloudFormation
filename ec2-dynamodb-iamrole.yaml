@@ -22,6 +22,7 @@ Resources:
       ProvisionedThroughput: 
         ReadCapacityUnits: "1"
         WriteCapacityUnits: "1" 
+  
   # iam role
   EC2DDBRole:
     Type: AWS::IAM::Role
@@ -53,3 +54,12 @@ Resources:
     Type: AWS::IAM::InstanceProfile
     Properties:
       Roles: !Ref EC2DDBRole
+      
+  # ec2 instance
+  
+    Properties:
+      IamInstanceProfile: !Ref EC2DDBInstanceProfile
+  
+  # web security group
+  
+  

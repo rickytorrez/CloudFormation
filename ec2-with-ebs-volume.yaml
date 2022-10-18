@@ -43,11 +43,16 @@ Parameters:
     Default: 10 
   KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
-  # volume creation optional parameter
+  # conditional parameter for volume creation
   NewVolumeOption:
     Type: String
     AllowedValues: [ true, false ]
     Description: Whether to create and attach an EBS volume
+  # conditional parameter that allows SSH
+  AllowSshAccess:
+    Type: String
+    AllowedValues: [ true, false ]
+    Description: Whether to allow SSH access to the web server
 
 Mappings:
   RegionImages:
@@ -57,8 +62,10 @@ Mappings:
       ImageId: ami-0de53d8956e8dcf80
 
 Conditions:
-  # condition whether to create the and attach the ebs volume or not
-  NewVolumeOptionSelected: !Equals [ !NewVolumeOption, true ]
+  # condition whether to create the ebs volume and attach it 
+  NewVolumeOptionSelected: !Equals [ !Ref NewVolumeOption, true ]
+  # condition whether to create and allow ssh access to the webserver
+  SshAccessAllowed: !Equals [ !Ref AllowSshAccess, true ]
 
 Resources:
   WebServerInstance:
@@ -67,10 +74,16 @@ Resources:
       InstanceType: t2.micro
       SubnetId: !Ref WebServerSubnet 
       ImageId: !FindInMap [ RegionImages, !Ref 'AWS::Region', ImageId ]
-      KeyName: !Ref KeyPairName 
+      # checks conditionally, if SSH is allowed
+      # if so, attach a reference to the KeyPairName parameter
+      # else, use the pseudo AWS No value as a null value
+      KeyName: !If [ SshAccessAllowed, !Ref KeyPairName, !Ref 'AWS::NoValue' ]
       SecurityGroupIds:
         - !Ref HttpSecurityGroup
-        - !Ref SshSecurityGroup
+        # checks conditionally, if SSH is allowed
+        # if so, attach a reference to the SshSecurityGroup
+        # else, use the pseudo AWS No value as a null value
+        - !If [ SshAccessAllowed, !Ref SshSecurityGroup, !Ref 'AWS::NoValue' ]
       Tags:
         -
           Key: Name
@@ -92,6 +105,8 @@ Resources:
 
   SshSecurityGroup:
     Type: AWS::EC2::SecurityGroup 
+    # Condition that will create the SSH access or not
+    Condition: SshAccessAllowed
     Properties:
       GroupDescription: Security group to allow SSH access 
       VpcId: !Ref VpcId
@@ -126,13 +141,13 @@ Resources:
       InstanceId: !Ref WebServerInstance
       VolumeId: !Ref EbsVolume
   
-  Outputs:
-    WebServerInstanceId:
-      Value: !Ref WebServerInstance
-    WebServerPublicDns:
-      Value: !GetAtt [ WebServerInstance, PublicDnsName ]
-      Description: The public DNS name of the web server
-    EbsVolumeId:
-      Value: !Ref EbsVolume
-      Condition: NewVolumeOptionSelected
+Outputs:
+  WebServerInstanceId:
+    Value: !Ref WebServerInstance
+  WebServerPublicDns:
+    Value: !GetAtt [ WebServerInstance, PublicDnsName ]
+    Description: The public DNS name of the web server
+  EbsVolumeId:
+    Value: !Ref EbsVolume
+    Condition: NewVolumeOptionSelected
       

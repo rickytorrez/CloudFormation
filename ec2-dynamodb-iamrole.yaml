@@ -2,3 +2,23 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   It creates a dynamodb table, ec2 instance with ssh access and policy that 
   let's the instance query the database
+
+Resources:
+  #dynamodb table
+  ProductTable:
+    Type: AWS::DynamoDB::Table
+    Properties: 
+      TableName: Product_table
+      AttributeDefinitions:
+        - AttributeName: "Make"
+          AttributeType: "S"
+        - AttributeName: "Model"
+          AttributeType: "S"
+      KeySchema:
+        - AttributeName: "Make"
+          KeyType: "HASH"
+        - AttributeName: "Model"
+          KeyType: "RANGE"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1" 

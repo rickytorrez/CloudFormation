@@ -66,7 +66,8 @@ Resources:
   EC2DDBInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
-      Roles: !Ref EC2DDBRole
+      Roles: 
+        - !Ref EC2DDBRole
       
   # ec2 instance
   EC2Instance:
@@ -80,3 +81,17 @@ Resources:
         - !Ref SSHSecGroup
       # 
       IamInstanceProfile: !Ref EC2DDBInstanceProfile
+  
+  # web security group
+  SSHSecGroup:
+    Type: AWS::EC2::SecurityGroup 
+    Properties:
+      GroupDescription: SSH Access for EC2 Instance.
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+      # ssh rule
+        -
+          CidrIp: 0.0.0.0/0 
+          IpProtocol: tcp
+          FromPort: 22 
+          ToPort: 22

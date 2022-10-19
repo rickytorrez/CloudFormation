@@ -57,9 +57,6 @@ Resources:
       
   # ec2 instance
   
-    Properties:
-      IamInstanceProfile: !Ref EC2DDBInstanceProfile
-  
   # web security group
   
   

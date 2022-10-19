@@ -69,7 +69,7 @@ Resources:
       Roles: 
         - !Ref EC2DDBRole
       
-# ec2 instance
+  # ec2 instance
   EC2Instance:
     Type: AWS::EC2::Instance 
     Properties:

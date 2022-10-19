@@ -2,6 +2,23 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   It creates a dynamodb table, ec2 instance with ssh access and policy that 
   let's the instance query the database
+  
+Parameters:
+  InstanceType: 
+    Description: Amazon EC2 instance type for the Virtual Machine
+    Type: String
+    AllowedValues:
+      - t2.micro
+  VpcId:
+    Description: Existing default VPC in the Availability Zone.
+    Type: AWS::EC2::VPC::Id
+  KeyPairName:
+    Description: Security Credentials used to connect to the EC2 instances via SSH.
+    Type: AWS::EC2::KeyPair::KeyName
+  ImageId:
+    Type: String
+    Default: ami-0de53d8956e8dcf80
+    Description: ImageId for EC2 Instance
 
 Resources:
   #dynamodb table
@@ -56,7 +73,29 @@ Resources:
       Roles: !Ref EC2DDBRole
       
   # ec2 instance
+  EC2Instance:
+    Type: AWS::EC2::Instance 
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref ImageId
+      KeyName: !Ref KeyPairName
+      # ssh access
+      SecurityGroupIds: 
+        - !Ref SSHSecGroup
+      # 
+      IamInstanceProfile: !Ref EC2DDBInstanceProfile
   
   # web security group
-  
+  SSHSecGroup:
+    Type: AWS::EC2::SecurityGroup 
+    Properties:
+      GroupDescription: SSH Access for EC2 Instance.
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+      # ssh rule
+        -
+          CidrIp: 0.0.0.0/0 
+          IpProtocol: tcp
+          FromPort: 22 
+          ToPort: 22
   

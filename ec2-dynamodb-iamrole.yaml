@@ -45,26 +45,22 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: EC2DBRole
+      Description: Query/Read DynamoDb for EC2
       AssumeRolePolicyDocument:
         Statement:
           - Effect: Allow
             Principal:
               Service: ec2.amazonaws.com
             Action: 'sts:AssumeRole'
-
-  # iam policy
-  EC2DDBPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: QueryAccesstoDynamoDB
-      PolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Effect: Allow
-            Action:
-              - dynamodb:*
-            Resource: arn:aws:dynamodb:*:*:table/Product_table
-      Roles: !Ref EC2DDBRole
+      Policies:
+        - PolicyName: QueryAccesstoDynamoDB
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:*
+                Resource: arn:aws:dynamodb:*:*:table/Product_table
   
   # instance profile
   EC2DDBInstanceProfile:
@@ -84,18 +80,3 @@ Resources:
         - !Ref SSHSecGroup
       # 
       IamInstanceProfile: !Ref EC2DDBInstanceProfile
-  
-  # web security group
-  SSHSecGroup:
-    Type: AWS::EC2::SecurityGroup 
-    Properties:
-      GroupDescription: SSH Access for EC2 Instance.
-      VpcId: !Ref VpcId
-      SecurityGroupIngress:
-      # ssh rule
-        -
-          CidrIp: 0.0.0.0/0 
-          IpProtocol: tcp
-          FromPort: 22 
-          ToPort: 22
-  
